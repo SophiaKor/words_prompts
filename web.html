@@ -1,0 +1,115 @@
+<html>
+	 <head>
+	 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	  <style type="text/css">
+			*,
+			*::after,
+			*::before {
+			  margin: 0;
+			  padding: 0;
+			  box-sizing: inherit;
+			  font-size: 62,5%;
+			}
+
+			body {
+			  height: 100vh;
+				width: 100%;
+			  background: #0f2027; /* fallback for old browsers */
+			  background: linear-gradient(to right,#2c5364, #203a43, #0f2027);
+			  display: flex;
+			  justify-content: center;
+			  align-items: center;
+			  height: 100vh;
+			  color: #fff;
+			}
+
+			.form__label {
+			  font-family: 'Roboto', sans-serif;
+			  font-size: 1.2rem;
+			  margin-left: 2rem;
+			  margin-top: 0.7rem;
+			  display: block;
+			  transition: all 0.3s;
+			  transform: translateY(0rem);
+			}
+
+			.form__input {
+			  font-family: 'Roboto', sans-serif;
+			  color: #333;
+			  font-size: 1.2rem;
+				margin: 0 auto;
+			  padding: 1.5rem 2rem;
+			  border-radius: 0.2rem;
+			  background-color: rgb(255, 255, 255);
+			  border: none;
+			  width: 90%;
+			  display: block;
+			  border-bottom: 0.3rem solid transparent;
+			  transition: all 0.3s;
+			}
+
+			.form__input:placeholder-shown + .form__label {
+			  opacity: 0;
+			  visibility: hidden;
+			  -webkit-transform: translateY(-4rem);
+			  transform: translateY(-4rem);
+			}
+
+	  </style>
+	 </head>
+
+	<body>
+
+		<div class="form__group">
+		  <input type="text" class="form__input" id="name"/>
+		  <div id="results"></div>
+		</div>
+		
+		<script type="text/javascript" >
+		// создать подключение
+		var socket = new WebSocket("ws://localhost:8080/ws");
+		
+		const input = document.querySelector('input');
+
+		input.addEventListener('input', updateValue);
+		
+		function updateValue(e) {
+			socket.send(e.target.value);
+	}
+
+		// обработчик входящих сообщений
+		socket.onmessage = function(event) {
+		  var incomingMessage = event.data;
+		  showMessage(incomingMessage);
+		};
+		
+		// показать сообщение в div#subscribe
+		function showMessage(message) {
+		
+		items = JSON.parse(message);
+		
+		var i;
+		for (i = 0; i < 10; i++) {
+			 var elem = document.getElementById("result" + i.toString());
+				 if (elem) {
+				 elem.remove();
+				}
+		}
+		
+		
+		for (var idx in items) {
+			  var messageElem = document.createElement('div');
+			  messageElem.setAttribute("id", "result" + idx.toString());
+			  messageElem.setAttribute("class", "form__label");
+			  
+			  messageElem.appendChild(document.createTextNode(items[idx]));
+			  
+			  document.getElementById('results').appendChild(messageElem);
+		}
+			
+			
+		}
+		</script>
+	</body>
+</html>
